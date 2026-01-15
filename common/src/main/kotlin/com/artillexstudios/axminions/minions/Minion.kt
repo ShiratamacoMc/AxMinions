@@ -2,12 +2,11 @@ package com.artillexstudios.axminions.minions
 
 import com.artillexstudios.axapi.events.PacketEntityInteractEvent
 import com.artillexstudios.axapi.hologram.Hologram
-import com.artillexstudios.axapi.hologram.HologramType
 import com.artillexstudios.axapi.hologram.HologramTypes
-import com.artillexstudios.axapi.hologram.page.HologramPage
 import com.artillexstudios.axapi.hologram.page.TextDisplayHologramPage
 import com.artillexstudios.axapi.packetentity.meta.entity.DisplayMeta
 import com.artillexstudios.axapi.packetentity.meta.entity.TextDisplayMeta
+import com.artillexstudios.axminions.integrations.hologram.FancyHologramsIntegration
 import com.artillexstudios.axapi.items.WrappedItemStack
 import com.artillexstudios.axapi.nms.NMSHandlers
 import com.artillexstudios.axapi.packetentity.PacketEntity
@@ -96,7 +95,7 @@ class Minion(
     private var dirty = true
     private var armTick = 2.0
     private var warning: Warning? = null
-    private var hologram: Hologram? = null
+    private var warningHologramId: String? = null
     private val extraData = hashMapOf<String, String>()
     private var linkedInventory: Inventory? = null
     internal val openInventories = mutableListOf<Inventory>()
@@ -179,7 +178,7 @@ class Minion(
 
         if (Config.DEBUG()) {
             debugHologram = Hologram(location.clone().add(0.0, 2.0, 0.0))
-            val page = hologram?.createPage(HologramTypes.TEXT)
+            val page = debugHologram?.createPage(HologramTypes.TEXT)
             page?.setEntityMetaHandler({ meta ->
                 val textDisplayMeta = meta as TextDisplayMeta;
                 textDisplayMeta.seeThrough(true);
@@ -462,12 +461,61 @@ class Minion(
         return this.warning
     }
 
-    override fun setWarningHologram(hologram: Hologram?) {
-        this.hologram = hologram
+    override fun createWarningHologram(location: Location, content: String) {
+        // 生成唯一的全息图ID
+        val hologramId = "axminions_warning_${locationID}"
+        
+        if (FancyHologramsIntegration.isEnabled()) {
+            // 使用FancyHolograms v2创建全息图
+            FancyHologramsIntegration.createTextHologram(
+                hologramId,
+                location,
+                StringUtils.formatToString(content),
+                true
+            )
+            warningHologramId = hologramId
+        } else {
+            // 回退到AxAPI全息图系统
+            val hologram = Hologram(location)
+            val page = hologram.createPage(HologramTypes.TEXT)
+            page.setEntityMetaHandler { meta ->
+                val textDisplayMeta = meta as TextDisplayMeta
+                textDisplayMeta.seeThrough(true)
+                textDisplayMeta.alignment(TextDisplayMeta.Alignment.CENTER)
+                textDisplayMeta.billboardConstrain(DisplayMeta.BillboardConstrain.CENTER)
+            }
+            page.setContent(StringUtils.formatToString(content))
+            page.spawn()
+            warningHologramId = hologramId
+        }
     }
 
-    override fun getWarningHologram(): Hologram? {
-        return this.hologram
+    override fun removeWarningHologram() {
+        val id = warningHologramId ?: return
+        
+        if (FancyHologramsIntegration.isEnabled()) {
+            FancyHologramsIntegration.removeHologram(id)
+        }
+        // 注意：AxAPI的Hologram没有通过ID管理，所以回退模式下需要其他方式处理
+        warningHologramId = null
+    }
+
+    override fun getWarningHologramId(): String? {
+        return warningHologramId
+    }
+
+    override fun updateWarningHologramLocation() {
+        val currentWarning = warning ?: return
+        val id = warningHologramId ?: return
+        
+        if (FancyHologramsIntegration.isEnabled()) {
+            val height = Config.WARNING_HOLOGRAM_HEIGHT()
+            val newLocation = location.clone().add(0.0, height, 0.0)
+            // 更新位置
+            FancyHologramsIntegration.updateLocation(id, newLocation)
+            // 更新内容（messages.yml可能已更改）
+            FancyHologramsIntegration.updateText(id, StringUtils.formatToString(currentWarning.getContent()))
+        }
     }
 
     override fun getOwner(): OfflinePlayer {

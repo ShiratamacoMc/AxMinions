@@ -38,6 +38,8 @@ class Integrations : Integrations {
     private val protectionIntegrations = com.artillexstudios.axminions.integrations.protection.ProtectionIntegrations()
     internal var kGeneratorsIntegration = false
     internal var itemsAdderIntegration = false
+    internal var customFishingIntegration = false
+    internal var customCropsIntegration = false
 
     override fun getStackerIntegration(): StackerIntegration {
         return stackerIntegration
@@ -196,6 +198,28 @@ class Integrations : Integrations {
 
         if (Bukkit.getPluginManager().getPlugin("Towny") != null) {
             register(TownyIntegration())
+        }
+
+        if (Bukkit.getPluginManager().getPlugin("CustomFishing") != null) {
+            customFishingIntegration = true
+            com.artillexstudios.axminions.integrations.customfishing.CustomFishingIntegration.enable()
+            Bukkit.getConsoleSender()
+                .sendMessage(StringUtils.formatToString("<#33FF33>[AxMinions] Hooked into CustomFishing!"))
+        }
+
+        if (Bukkit.getPluginManager().getPlugin("CustomCrops") != null) {
+            customCropsIntegration = true
+            com.artillexstudios.axminions.integrations.customcrops.CustomCropsIntegration.enable()
+            Bukkit.getConsoleSender()
+                .sendMessage(StringUtils.formatToString("<#33FF33>[AxMinions] Hooked into CustomCrops!"))
+        }
+
+        // FancyHolograms v2 集成
+        if (Bukkit.getPluginManager().getPlugin("FancyHolograms") != null) {
+            if (com.artillexstudios.axminions.integrations.hologram.FancyHologramsIntegration.enable()) {
+                Bukkit.getConsoleSender()
+                    .sendMessage(StringUtils.formatToString("<#33FF33>[AxMinions] Hooked into FancyHolograms v2!"))
+            }
         }
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {

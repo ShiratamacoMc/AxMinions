@@ -8,6 +8,7 @@ import com.artillexstudios.axminions.api.utils.LocationUtils
 import com.artillexstudios.axminions.api.utils.MinionUtils
 import com.artillexstudios.axminions.api.utils.fastFor
 import com.artillexstudios.axminions.api.warnings.Warnings
+import com.artillexstudios.axminions.integrations.customcrops.CustomCropsIntegration
 import com.artillexstudios.axminions.minions.MinionTicker
 import dev.lone.itemsadder.api.CustomBlock
 import org.bukkit.Bukkit
@@ -90,6 +91,27 @@ class FarmerMinionType : MinionType("farmer", AxMinionsPlugin.INSTANCE.getResour
 
         blocks.fastFor { location ->
             val block = location.block
+
+            // CustomCrops 集成 - 检查是否启用并且小人等级达到要求
+            if (AxMinionsPlugin.integrations.customCropsIntegration) {
+                val enableCustomCrops = getConfig().getBoolean("custom-crops.enabled", false)
+                val requiredLevel = getConfig().getInt("custom-crops.required-level", 5)
+                
+                if (enableCustomCrops && minion.getLevel() >= requiredLevel) {
+                    if (CustomCropsIntegration.isCustomCrop(block) && CustomCropsIntegration.isMature(block)) {
+                        val preHarvestEvent = PreFarmerMinionHarvestEvent(minion, block)
+                        Bukkit.getPluginManager().callEvent(preHarvestEvent)
+                        if (preHarvestEvent.isCancelled) return@fastFor
+                        
+                        val customDrops = CustomCropsIntegration.harvestCrop(minion, block)
+                        if (customDrops.isNotEmpty()) {
+                            size += customDrops.size
+                            drops.addAll(customDrops)
+                            return@fastFor
+                        }
+                    }
+                }
+            }
 
             if (AxMinionsPlugin.integrations.itemsAdderIntegration) {
                 val customBlock = CustomBlock.byAlreadyPlaced(block)

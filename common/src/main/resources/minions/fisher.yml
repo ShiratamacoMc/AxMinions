@@ -7,6 +7,15 @@ tool:
   material:
     - "FISHING_ROD"
 
+# CustomFishing 集成配置
+# 需要安装 CustomFishing 插件才能生效
+# 注意：战利品的概率和区域条件由 CustomFishing 插件控制
+custom-fishing:
+  # 是否启用 CustomFishing 集成
+  enabled: true
+  # 小人需要达到的最低等级才能钓到 CustomFishing 的鱼
+  required-level: 5
+
 item:
   type: "player_head"
   texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWMxNWU1ZmI1NmZhMTZiMDc0N2IxYmNiMDUzMzVmNTVkMWZhMzE1NjFjMDgyYjVlMzY0M2RiNTU2NTQxMDg1MiJ9fX0="

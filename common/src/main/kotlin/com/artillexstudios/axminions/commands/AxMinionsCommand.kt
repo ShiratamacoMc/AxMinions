@@ -76,6 +76,8 @@ class AxMinionsCommand {
 
         AxMinionsAPI.INSTANCE.getMinions().fastFor {
             it.markDirty()
+            // 更新警告全息图位置
+            it.updateWarningHologramLocation()
         }
 
         AxMinionsPlugin.integrations.reload()

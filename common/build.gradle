@@ -40,4 +40,9 @@ dependencies {
     implementation("org.bstats:bstats-bukkit:3.0.2")
     compileOnly 'org.black_ixx:playerpoints:3.2.6'
     compileOnly 'me.clip:placeholderapi:2.11.5'
+    // CustomFishing 和 CustomCrops 集成
+    compileOnly files('../libs/CustomFishing-2.3.19.3.jar')
+    compileOnly files('../libs/CustomCrops-3.6.48.jar')
+    // FancyHolograms v2 集成
+    compileOnly files('../libs/FancyHolograms-2.9.0.jar')
 }

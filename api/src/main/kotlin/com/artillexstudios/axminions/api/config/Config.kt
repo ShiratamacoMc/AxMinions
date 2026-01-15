@@ -29,6 +29,8 @@ class Config(file: File, stream: InputStream) {
         @JvmStatic
         fun DISPLAY_WARNINGS() = AxMinionsAPI.INSTANCE.getConfig().get("display-warnings", true)
         @JvmStatic
+        fun WARNING_HOLOGRAM_HEIGHT() = AxMinionsAPI.INSTANCE.getConfig().get("warning-hologram-height", 1.35)
+        @JvmStatic
         fun CAN_BREAK_TOOLS() = AxMinionsAPI.INSTANCE.getConfig().get("can-break-tools", true)
         @JvmStatic
         fun ISLAND_LIMIT() = AxMinionsAPI.INSTANCE.getConfig().get("island-limit", 0)

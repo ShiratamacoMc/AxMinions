@@ -1,10 +1,5 @@
 package com.artillexstudios.axminions.api.warnings
 
-import com.artillexstudios.axapi.hologram.Hologram
-import com.artillexstudios.axapi.hologram.HologramTypes
-import com.artillexstudios.axapi.utils.StringUtils
-import com.artillexstudios.axapi.packetentity.meta.entity.DisplayMeta
-import com.artillexstudios.axapi.packetentity.meta.entity.TextDisplayMeta
 import com.artillexstudios.axminions.api.config.Config
 import com.artillexstudios.axminions.api.minions.Minion
 
@@ -20,18 +15,11 @@ abstract class Warning(private val name: String) {
         if (!Config.DISPLAY_WARNINGS()) return
 
         if (minion.getWarning() == null) {
-            val hologram = Hologram(minion.getLocation().clone().add(0.0, 1.35, 0.0))
-            val page = hologram.createPage(HologramTypes.TEXT)
-            page.setEntityMetaHandler { meta ->
-                val textDisplayMeta = meta as TextDisplayMeta
-                textDisplayMeta.seeThrough(true)
-                textDisplayMeta.alignment(TextDisplayMeta.Alignment.CENTER)
-                textDisplayMeta.billboardConstrain(DisplayMeta.BillboardConstrain.CENTER)
-            }
-            page.setContent(StringUtils.formatToString(this.getContent()))
-            page.spawn()
+            // 使用配置的高度偏移创建警告全息图
+            val height = Config.WARNING_HOLOGRAM_HEIGHT()
+            val hologramLocation = minion.getLocation().clone().add(0.0, height, 0.0)
+            minion.createWarningHologram(hologramLocation, this.getContent())
             minion.setWarning(this)
-            minion.setWarningHologram(hologram)
         }
     }
 }

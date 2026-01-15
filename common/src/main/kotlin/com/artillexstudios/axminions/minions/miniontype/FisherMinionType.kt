@@ -7,6 +7,7 @@ import com.artillexstudios.axminions.api.minions.miniontype.MinionType
 import com.artillexstudios.axminions.api.utils.LocationUtils
 import com.artillexstudios.axminions.api.utils.fastFor
 import com.artillexstudios.axminions.api.warnings.Warnings
+import com.artillexstudios.axminions.integrations.customfishing.CustomFishingIntegration
 import com.artillexstudios.axminions.minions.MinionTicker
 import com.artillexstudios.axminions.nms.NMSHandler
 import org.bukkit.Bukkit
@@ -16,6 +17,7 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.DoubleChestInventory
+import org.bukkit.inventory.ItemStack
 
 class FisherMinionType : MinionType("fisher", AxMinionsPlugin.INSTANCE.getResource("minions/fisher.yml")!!) {
 
@@ -83,7 +85,7 @@ class FisherMinionType : MinionType("fisher", AxMinionsPlugin.INSTANCE.getResour
 
         Warnings.remove(minion, Warnings.NO_TOOL)
 
-        var loot = NMSHandler.get().generateRandomFishingLoot(minion, waterLocation!!)
+        var loot: List<ItemStack> = generateFishingLoot(minion, waterLocation!!)
 
         val preFishEvent = PreFisherMinionFishEvent(minion, loot)
         Bukkit.getPluginManager().callEvent(preFishEvent)
@@ -101,5 +103,29 @@ class FisherMinionType : MinionType("fisher", AxMinionsPlugin.INSTANCE.getResour
 
         minion.setActions(minion.getActionAmount() + 1)
         minion.damageTool()
+    }
+
+    /**
+     * 生成钓鱼战利品，支持 CustomFishing 集成
+     * CustomFishing 的概率和区域条件由 CustomFishing 插件自己控制
+     */
+    private fun generateFishingLoot(minion: Minion, waterLocation: Location): List<ItemStack> {
+        // 检查是否启用 CustomFishing 并且小人等级达到要求
+        if (AxMinionsPlugin.integrations.customFishingIntegration) {
+            val enableCustomFishing = getConfig().getBoolean("custom-fishing.enabled", false)
+            val requiredLevel = getConfig().getInt("custom-fishing.required-level", 5)
+            
+            if (enableCustomFishing && minion.getLevel() >= requiredLevel) {
+                // 使用 CustomFishing 的概率和区域系统生成战利品
+                val customLoot = CustomFishingIntegration.generateLoot(minion, waterLocation)
+                if (customLoot.isNotEmpty()) {
+                    return customLoot
+                }
+                // 如果 CustomFishing 没有返回战利品（可能是区域条件不满足），则使用原版
+            }
+        }
+        
+        // 默认使用原版钓鱼战利品
+        return NMSHandler.get().generateRandomFishingLoot(minion, waterLocation)
     }
 }

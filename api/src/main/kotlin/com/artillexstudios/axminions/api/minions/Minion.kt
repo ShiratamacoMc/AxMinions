@@ -1,6 +1,5 @@
 package com.artillexstudios.axminions.api.minions
 
-import com.artillexstudios.axapi.hologram.Hologram
 import com.artillexstudios.axapi.packetentity.PacketEntity
 import com.artillexstudios.axminions.api.minions.miniontype.MinionType
 import com.artillexstudios.axminions.api.warnings.Warning
@@ -38,9 +37,27 @@ interface Minion : InventoryHolder {
 
     fun getWarning(): Warning?
 
-    fun setWarningHologram(hologram: Hologram?)
+    /**
+     * 创建警告全息图
+     * @param location 全息图位置
+     * @param content 全息图内容
+     */
+    fun createWarningHologram(location: Location, content: String)
 
-    fun getWarningHologram(): Hologram?
+    /**
+     * 移除警告全息图
+     */
+    fun removeWarningHologram()
+
+    /**
+     * 获取警告全息图ID
+     */
+    fun getWarningHologramId(): String?
+
+    /**
+     * 更新警告全息图位置（用于reload时更新）
+     */
+    fun updateWarningHologramLocation()
 
     fun getOwner(): OfflinePlayer?
 

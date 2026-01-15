@@ -18,6 +18,14 @@ tool:
 # If set to face: checks blocks only in the facing of the minion (Least resource intensive)
 mode: sphere
 
+# CustomCrops 集成配置
+# 需要安装 CustomCrops 插件才能生效
+custom-crops:
+  # 是否启用 CustomCrops 集成
+  enabled: true
+  # 小人需要达到的最低等级才能收获 CustomCrops 的作物
+  required-level: 5
+
 item:
   type: "player_head"
   texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDAxZTAzNWEzZDhkNjEyNjA3MmJjYmU1MmE5NzkxM2FjZTkzNTUyYTk5OTk1YjVkNDA3MGQ2NzgzYTMxZTkwOSJ9fX0="

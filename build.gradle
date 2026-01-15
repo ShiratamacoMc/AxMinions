@@ -130,13 +130,11 @@ allprojects {
         implementation(files("${rootProject.projectDir}/libs/AxAPI-1.4.749-all.jar"))
     }
 
-if (project.name != "api") {
-    tasks.named("shadowJar") {
-    mustRunAfter(":api:shadowJar")
-}
-}
-
-
+    if (project.name != "api") {
+        tasks.named("shadowJar") {
+            mustRunAfter(":api:shadowJar")
+        }
+    }
 }
 
 
