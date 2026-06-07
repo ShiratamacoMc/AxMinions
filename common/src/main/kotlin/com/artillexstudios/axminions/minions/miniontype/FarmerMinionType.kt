@@ -98,15 +98,25 @@ class FarmerMinionType : MinionType("farmer", AxMinionsPlugin.INSTANCE.getResour
                 val requiredLevel = getConfig().getInt("custom-crops.required-level", 5)
                 
                 if (enableCustomCrops && minion.getLevel() >= requiredLevel) {
-                    if (CustomCropsIntegration.isCustomCrop(block) && CustomCropsIntegration.isMature(block)) {
+                    // 使用优化的方法一次性检查作物和成熟度
+                    if (CustomCropsIntegration.isMatureCrop(location)) {
                         val preHarvestEvent = PreFarmerMinionHarvestEvent(minion, block)
                         Bukkit.getPluginManager().callEvent(preHarvestEvent)
                         if (preHarvestEvent.isCancelled) return@fastFor
                         
-                        val customDrops = CustomCropsIntegration.harvestCrop(minion, block)
-                        if (customDrops.isNotEmpty()) {
-                            size += customDrops.size
-                            drops.addAll(customDrops)
+                        // 收获 CustomCrops 作物，掉落物添加到 drops 列表
+                        // 会自动回种作物
+                        if (CustomCropsIntegration.harvestCrop(minion, location, drops)) {
+                            size++
+                            return@fastFor
+                        }
+                    }
+                    
+                    // 检查是否可以种植 CustomCrops 作物
+                    if (CustomCropsIntegration.canPlantAt(location)) {
+                        // 尝试从容器中获取种子并种植
+                        if (CustomCropsIntegration.tryPlantFromInventory(minion, location)) {
+                            size++
                             return@fastFor
                         }
                     }

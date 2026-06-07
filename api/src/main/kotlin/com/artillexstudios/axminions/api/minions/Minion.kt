@@ -59,6 +59,11 @@ interface Minion : InventoryHolder {
      */
     fun updateWarningHologramLocation()
 
+    /**
+     * 更新小人名称显示（用于reload时更新）
+     */
+    fun updateDisplayName()
+
     fun getOwner(): OfflinePlayer?
 
     fun getOwnerUUID(): UUID

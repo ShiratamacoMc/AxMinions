@@ -210,6 +210,7 @@ class Integrations : Integrations {
         if (Bukkit.getPluginManager().getPlugin("CustomCrops") != null) {
             customCropsIntegration = true
             com.artillexstudios.axminions.integrations.customcrops.CustomCropsIntegration.enable()
+            com.artillexstudios.axminions.integrations.customcrops.CustomCropsIntegration.setDebug(Config.DEBUG())
             Bukkit.getConsoleSender()
                 .sendMessage(StringUtils.formatToString("<#33FF33>[AxMinions] Hooked into CustomCrops!"))
         }

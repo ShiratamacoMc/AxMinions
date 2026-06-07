@@ -518,6 +518,18 @@ class Minion(
         }
     }
 
+    override fun updateDisplayName() {
+        val meta = entity.meta()
+        meta.name(
+            StringUtils.format(
+                type.getConfig().get("entity.name"),
+                Placeholder.unparsed("owner", owner.name ?: "???"),
+                Placeholder.unparsed("level", level.toString()),
+                Placeholder.parsed("level_color", Messages.LEVEL_COLOR(level))
+            )
+        )
+    }
+
     override fun getOwner(): OfflinePlayer {
         return this.owner
     }

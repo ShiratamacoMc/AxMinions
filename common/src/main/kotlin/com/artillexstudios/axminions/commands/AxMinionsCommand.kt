@@ -76,7 +76,9 @@ class AxMinionsCommand {
 
         AxMinionsAPI.INSTANCE.getMinions().fastFor {
             it.markDirty()
-            // 更新警告全息图位置
+            // 更新小人名称显示
+            it.updateDisplayName()
+            // 更新警告全息图位置和内容
             it.updateWarningHologramLocation()
         }
 
